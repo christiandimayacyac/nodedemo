@@ -1,0 +1,7 @@
+.u-center-text {
+    text-align: center;
+}
+
+.sr-only {
+    @include sr-only;
+}

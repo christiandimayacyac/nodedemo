@@ -1,0 +1,9 @@
+<%- include('inc/header') %>
+    <form class="form-add" action="/admin/add-product" method="POST">
+        <div class="control-group">
+            <label class="form-add__label" for="itemName0">Item</label> 
+            <input class="form-add__input" id="itemName" type="text" name="itemName">
+            <button class="form-add__submit" type="submit">Add</button>
+        </div>
+    </form>
+<%- include('inc/footer') %>

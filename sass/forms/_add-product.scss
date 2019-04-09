@@ -1,0 +1,51 @@
+.form-add {
+
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        width: 30rem;
+        margin: 0 auto;
+        margin-top: 2rem;
+
+        * {
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+        }
+    }
+
+    &__label {
+        display: block;
+    }
+
+    &__input[type="text"] {
+        height: 3rem;
+        padding: .2rem .5rem;
+        border-radius: .3rem;
+        border: .1rem solid #1d1d1d;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    &__submit[type="submit"] {
+        width: 6rem;
+        padding: .8rem 1.2rem;
+        border-radius: .3rem;
+        border-color: #1d1d1d;
+        background-color: transparent;
+        font-size: 1.5rem;
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            color: #fff;
+            background-color: #000;
+        }
+    }
+
+}
+

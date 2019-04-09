@@ -1,0 +1,84 @@
+// Rem output with px fallback
+@mixin font-size($sizeValue: 1) {
+	font-size: ($sizeValue * 16) * 1px;
+	font-size: $sizeValue * 1rem;
+}
+
+// Center block
+@mixin center-block {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+// Clearfix
+@mixin clearfix() {
+	content: "";
+	display: table;
+	table-layout: fixed;
+}
+
+// Clear after (not all clearfix need this also)
+@mixin clearfix-after() {
+	clear: both;
+}
+
+// Column width with margin
+@mixin column-width($numberColumns: 3) {
+	width: map-get( $columns, $numberColumns ) - ( ( $columns__margin * ( $numberColumns - 1 ) ) / $numberColumns );
+}
+
+// Custom Mixins
+
+//Flex Row Space-Between Center
+@mixin flex-r-sb-c {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+//Flex Row Space-Between Flex-Start
+@mixin flex-r-sb-fs {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+//Flex Row Space-Between Flex-End
+@mixin flex-r-sb-fe {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+//Flex Column Space-Between Center
+@mixin flex-c-sb-c {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+}
+
+//Flex Column Space-Between Flex-Start
+@mixin flex-c-sb-fs {
+	display: flex;
+
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+//Flex Column Space-Between Flex-End
+@mixin flex-c-sb-fe {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+
+
+//Screen reader only
+@mixin sr-only {
+	display: none;
+}

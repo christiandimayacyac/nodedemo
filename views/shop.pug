@@ -1,0 +1,22 @@
+extends layouts/main-layout
+
+block styles 
+    link(rel="stylesheet", href="/css/main.css")
+block content
+    if products.length > 0
+        h1.page-title My Products
+        p.page-subtitle List of all products...
+        .grid
+            each product in products
+                article.card.product-item   
+                    header.card__header
+                        h1.product__title  #{product.item}
+                    .card__image
+                        img(src="/images/book.jpg")
+                    .card__content
+                        h2.product__price Php 99.00
+                        p.description A very intersting story about the scariest place in the middle of the dessert.
+                    .card__actions
+                        button.card__btn Add to Cart
+    else    
+        h1 No Products
