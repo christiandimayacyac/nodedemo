@@ -1,4 +1,4 @@
-<%- include('inc/header') %>
+<%- include('../inc/header') %>
     <% if (products.length > 0) { %>
         <h1 class="page-title">My Products</h1> 
         <p class="page-subtitle">List of all products...</p> 
@@ -9,19 +9,17 @@
                         <h1 class="product__title"><%= product.itemName %></h1>  
                     </header>
                     <div class="card__image">
-                        <img src="/images/book.jpg">
+                        <img src="<%= product.imageURL %>">
                     </div>
                     <div class="card__content">
-                        <h2 class="product__price">Php 99.00</h2>
-                        <p class="description">A very intersting story about the scariest place in the middle of the dessert.</p>
+                        <h2 class="product__price">Php <%= product.price %></h2>
+                        <p class="description"><%= product.description %></p>
                     </div>
-                    <div class="card__actions">
-                        <button class="card__btn">Add to Cart</button> 
-                    </div>
+                    <%- include('../inc/add-to-cart.ejs', {product:product}) %>
                 </article>   
             <% } %>
         </div>
     <% }  else {%>  
         <h1>No Products</h1> 
     <% } %>
-<%- include('inc/footer') %>
+<%- include('../inc/footer') %>

@@ -1,0 +1,22 @@
+<%- include('../inc/header') %>
+    <!-- <form class="form-add" action="/admin/add-product" method="POST">
+        <div class="control-group">
+            <label class="form-add__label" for="itemName">Item</label> 
+            <input class="form-add__input" id="itemName" type="text" name="itemName">
+        </div>
+        <div class="control-group">
+            <label class="form-add__label" for="imageURL">Image URL</label> 
+            <input class="form-add__input" id="imageURL" type="text" name="imageURL">
+        </div>
+        <div class="control-group">
+            <label class="form-add__label" for="price">Price</label> 
+            <input class="form-add__input" id="price" type="number"  step="0.01" name="price">
+        </div>
+        <div class="control-group">
+            <label class="form-add__label" for="description">Description</label> 
+            <textarea class="form-add__input" id="description" type="text" name="description" rows="5"></textarea>
+        </div>
+        <button class="form-add__submit" type="submit">Add</button>
+    </form> -->
+    <%- include('../inc/add-edit-form', {mode: mode}) %>
+<%- include('../inc/footer') %>

@@ -1,0 +1,20 @@
+<%- include('../inc/header') %>
+    <div class="product-container">
+        <div class="product-container__left">
+            <img class="product__image" src="<%= product.imageURL %>" alt="<%= product.itemName %>">
+        </div>
+        <div class="product-container__right">
+            <header class="product-header">
+                <h2 class="product__itemName"><%= product.itemName %></h2>
+            </header>
+            <div class="product__description">
+                <p class="product__description-label">Description</p>
+                <p class="product__description-content"><%= product.description %></p>
+            </div>
+            <p class="product__price">Php <%= product.price %></p>
+            <%- include('../inc/add-to-cart.ejs') %>
+        </div>
+
+    </div>
+
+<%- include('../inc/footer') %>
