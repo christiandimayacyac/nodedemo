@@ -3,90 +3,127 @@ const Product = require('../models/Product');
 const Cart = require('../models/Cart');
 
 
+
+
 // /product-list => GET
 exports.getProductsListPage = (req, res, next) => {
-    //Pass the anonumous function as a callback for Product.fetchAll; this callback will be executed only after the fetchAll finishes executing the readFile callback
-    //Product.fetchAll will be the one to pass products parameter a value of [] or JSON data after fetchAll finishes it execution
-    Product.fetchAll((products) => {
-        res.render("shop/product-list",{
-            products: products, 
-            pageTitle: 'Product List', 
-            path: '/product-list'
-        });
-    });
+    //Retrieve all products using the sequelize .findAll method
+    Product.findAll()
+        .then(products=>{
+            res.render("shop/product-list",{
+                products: products, 
+                pageTitle: 'Product List', 
+                path: '/product-list'
+            });
+        })
+        .catch(err=>console.log(err));
 }
 
 // / => GET
 exports.getIndexPage = (req, res, next) => {
-    //Pass the anonumous function as a callback for Product.fetchAll; this callback will be executed only after the fetchAll finishes executing the readFile callback
-    //Product.fetchAll will be the one to pass products parameter a value of [] or JSON data after fetchAll finishes it execution
-    Product.fetchAll((products) => {
+    //Retrieve all products using the sequelize .findAll method
+    Product.findAll()
+        .then(products=>{
         res.render("shop/index",{
-            products: products, 
+            products: products,
             pageTitle: 'Shop', 
             path: '/'
         });
-    });
+    })
+    .catch(err=>console.log(err));
 }
 
 // /cart => GET
 exports.getProductDetails = (req, res, next) => {
     //Get and assign the product id from the post data
     const productId = req.params.productId;
-    
-    Product.findProductById(productId, (product) =>{
-        //Render view with the product object
-        res.render("shop/product-detail", {
-            pageTitle: 'Product Detail',
-            product: product,
-            path: '/product-list'
-        });
-    });
+
+    //Retrieve all products using the sequelize .findByPk method
+    Product.findByPk(productId)
+        .then(product=>{
+            //Render view with the product object
+            res.render("shop/product-detail", {
+                pageTitle: 'Product Detail',
+                product: product,
+                path: '/product-list'
+            });
+        })
+        .catch(err=>console.log9(err));
 }
 
 // /cart => GET
 exports.getCartPage = (req, res, next) => {
-    
-    console.log("getting cart page");
     //Retrive
-    Product.fetchAll(products=> {
-        console.log(products);
-        //Initialize cartProucts to hold cart items with details
-        const cartProducts = [];    
-        // Retrieve cart products
-        Cart.getCart(cart=>{
-            //Match each product in the cart to the complete product list and add to Products array
-            for (cartProduct of cart.products) {
-                const matchingProductIndex = products.findIndex(prod=>prod.id === cartProduct.id);
-                if (matchingProductIndex >= 0) {
-                    cartProducts.push({id:products[matchingProductIndex].id, itemName:products[matchingProductIndex].itemName, qty: cartProduct.qty});
-                }
+    req.user.getCart()
+        .then(cart=>{
+            const cartProducts = [];
+            if (!cart) {
+                console.log("User has no cart");
             }
-
-            //Render the products in the view
-            res.render("shop/cart",{
-                pageTitle: 'Your Cart', 
-                path: '/cart',
-                products: cartProducts
-            });
-        });
-
+            else{
+                console.log("User has a cart");
+                cart.getProducts()
+                    .then(cartProducts=>{
+                        console.log(cartProducts);
+                        // Render the products in the view
+                        res.render("shop/cart",{
+                            pageTitle: 'Your Cart', 
+                            path: '/cart',
+                            products: cartProducts //"cartItems" table is also accessible in the views as it is inbetween table of cart and products
+                        });
+                    })
+                    .catch(err=>console.log(err))
+            }
+        })
+        .catch(err=>console.log(err))
         
-
-    });
-
-    console.log("end getting cart page");
 }
 
 // /cart => POST
 exports.postCart = (req, res, next) => {
-    console.log(req.body.productId);
     //Get the POST DATA
     const productId = req.body.productId;
     const price = req.body.price;
-    const qty = 1;
+    let newQty = 1;
 
-    Cart.addProduct (productId, price, qty);
+    let userCart;
+    req.user.getCart()
+        .then(cart=>{ //SELECT `id`, `createdAt`, `updatedAt`, `userId` FROM `carts` AS `cart` WHERE `cart`.`userId` = 1 LIMIT 1;
+            // console.log("CART FOUND:", cart);
+            //Retrieve a product that is found in cart of the user
+            userCart = cart;
+            return cart.getProducts({where: {id: productId}});  //SELECT `product`.`id`, `product`.`itemName`, `product`.`price`, `product`.`description`, `product`.`imageURL`, `product`.`createdAt`, `product`.`updatedAt`, `product`.`userId`, `cartItems`.`id` AS `cartItems.id`, `cartItems`.`qty` AS `cartItems.qty`, `cartItems`.`createdAt` AS `cartItems.createdAt`, `cartItems`.`updatedAt` AS `cartItems.updatedAt`, `cartItems`.`cartId` AS `cartItems.cartId`, `cartItems`.`productId` AS `cartItems.productId` FROM `products` AS `product` INNER JOIN `cartItems` AS `cartItems` ON `product`.`id` = `cartItems`.`productId` AND `cartItems`.`cartId` = 1 WHERE (`product`.`id` = '1');
+        })
+            .then(products=>{
+                //If product exists in the cart, increment the quantity
+                if (products.length > 0) {
+                    console.log("Product already exists in the Cart");
+                    const product = products[0]; //Array expected so get the first element only
+                    //Get the current quantity of the product in the cart
+                    const currentQty =  product.cartItem.qty;
+                    console.log("QUANTITY OF THE PRODUCT: ", product.cartItem.qty);
+                    newQty = currentQty + 1;
+                    //Increment Quantity and save
+                    return product;
+                }
+                //If product does not exist in cart get the product from the product list
+                else {
+                    console.log("Product does not exists in the Cart");
+                    //Retrieve the product details from the products table to be added in the cart
+                    return Product.findByPk(productId)
+                }
+            })
+                //Save the new product or incremented qty
+                .then(product=> {
+                    return userCart.addProduct(product, {through : {qty: newQty}});
+                })
+                .then(result=>{
+                    //Handle the result of the adding product to the cart
+                    console.log("Product is added in the cart");
+                })
+                .catch(err=>console.log(err))
+        .catch(err=>console.log(err))
+    // Cart.addProduct (productId, price, qty);
 
     res.redirect("/");
 }

@@ -1,28 +1,28 @@
+//Require Sequelize
 const Sequelize = require('sequelize');
 //Require the database.js as sequelize object
 const sequelize = require('../helpers/database');
 
-//Define the PRODUCT MODEL
-const Product = sequelize.define('product', {
+const User = sequelize.define('user', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    itemName: Sequelize.STRING,
-    price: {
-        type: Sequelize.DOUBLE,
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    email: {
+        type: Sequelize.STRING,
         allowNull: false
     },
-    description: {
-        type: Sequelize.TEXT,
-        allowNull: false
-    },
-    imageURL: {
+    password: {
         type: Sequelize.STRING,
         allowNull: false
     }
 });
 
-module.exports = Product;  
+module.exports = User;
+

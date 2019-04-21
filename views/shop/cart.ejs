@@ -4,7 +4,7 @@
         <ul class="cart-list">
             <% for (let product of products) { %>
                 <li class="cart-list__item">
-                    <span><%= product.itemName%> - <%= product.qty%></span>
+                    <span><%= product.itemName%> - <%= product.cartItem.qty%></span>
                     <form action="/cart-delete-product" method="POST">
                         <input type="hidden" name="productId" value="<%= product.id %>">
                         <button class="btn">Delete</button>

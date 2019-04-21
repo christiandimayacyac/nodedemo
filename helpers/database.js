@@ -1,10 +1,10 @@
-const mysql = require('mysql2');
+const Sequelize = require('sequelize');
 
-const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    database: 'node-complete',
-    password: 'bahongtae'
-});
+const sequelize = new Sequelize('nodedemo', 'ziemdi', '123456', {dialect: 'mysql', host: 'localhost'});
 
-module.exports = pool.promise();
+//Check database connection
+sequelize.authenticate()
+    .then(()=>console.log("Database connected..."))
+    .catch(err=>console.log("Error connecting to the database: ", err))
+
+module.exports = sequelize;
