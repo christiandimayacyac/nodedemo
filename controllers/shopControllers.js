@@ -1,8 +1,5 @@
 //Declare an array that will hold the products
 const Product = require('../models/Product');
-const Cart = require('../models/Cart');
-
-
 
 
 // /product-list => GET
@@ -142,7 +139,7 @@ exports.deleteCartProduct = (req, res, next) => {
                 if (products.length > 0) {
                     const product = products[0];
                     console.log("product to DESTROY:  ",product);
-                    return product.cartItem.destroy(); //
+                    return product.cartItem.destroy(); //"cartItem" is made accessible by sequelize through association b/w cart and product tables
                 }
                 else {
                     console.log("Product is not found in the cart.");
@@ -155,10 +152,48 @@ exports.deleteCartProduct = (req, res, next) => {
 
 // /cart => GET
 exports.getOrdersPage = (req, res, next) => {
-    res.render("shop/orders",{
-        pageTitle: 'Your Orders', 
-        path: '/orders'
-    });
+    req.user.getOrders({include: ['products']}) // {include: ['products']}  <== this parameter fetches products from products table related Orders; Note: this include ['products] makes it possible to use orderItem related to products in the view i.e. product.orderIten.qty
+        .then(orders=>{
+            console.log(orders)
+            res.render("shop/orders",{
+                pageTitle: 'Your Orders', 
+                path: '/orders',
+                orders: orders
+            });
+        })
+        .catch(err=>console.log(err))
+}
+
+exports.postOrder =  (req, res, next) => {
+    //Define the user's cart for later cleanup
+    let userCart;
+    //Retrieve POST data
+    req.user.getCart()
+        .then(cart=>{
+            userCart = cart;
+            return cart.getProducts();
+        })
+            .then(products=>{
+                return req.user.createOrder()
+                    .then(order=>{
+                        return order.addProducts(products.map(product=>{
+                            product.orderItem = { qty: product.cartItem.qty };
+                            return product;
+                        }));
+                    })
+                    .catch(err=>console.log(err))
+
+            })
+            .then(result=>{
+                console.log("Orders are now placed...");
+                return userCart.setProducts(null);
+                res.redirect("/orders");
+            })
+                .then(result=>{
+                    res.redirect("/orders");
+                })
+            .catch(err=>console.log(err))
+        .catch(err=>console.log(err))
 }
 
 // /checkout => GET

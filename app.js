@@ -13,6 +13,8 @@ const Product = require('./models/Product');
 const User = require('./models/User');
 const Cart = require('./models/Cart');
 const CartItem = require('./models/Cart-Item');
+const Order = require('./models/Order');
+const OrderItem = require('./models/Order-Item');
 
 //Define the controllers
 const errorControllers = require('./controllers/errors');
@@ -54,6 +56,9 @@ User.hasOne(Cart);
 Cart.belongsTo(User); // OPTIONAL: Inverse of the above line of code
 Cart.belongsToMany(Product, {through: CartItem}); //will generate CartProduct model that will hold cartId and ProductId
 Product.belongsToMany(Cart, {through: CartItem}); //and through is required for belongsToMany association
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, {through: OrderItem});
 
 //Sync the defined Models fromt the database.js to the MYSQL database
 sequelize

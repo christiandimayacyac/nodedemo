@@ -1,3 +1,15 @@
 <%- include('../inc/header') %>
     <h1>Orders page</h1>
+    <% if (orders.length > 0) { %>
+        <ul>
+            <% for (let order of orders) { %>
+                <li><%= order.id %></li>
+                    <ul>
+                        <% for (let product of  order.products) { %> 
+                            <li><%= product.itemName %> - <%= product.orderItem.qty %></li>
+                        <% } %>  
+                    </ul>
+            <% } %>
+        </ul>
+    <% } %>
 <%- include('../inc/footer') %>
