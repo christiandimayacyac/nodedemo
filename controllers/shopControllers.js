@@ -48,7 +48,7 @@ exports.getProductDetails = (req, res, next) => {
                 path: '/product-list'
             });
         })
-        .catch(err=>console.log9(err));
+        .catch(err=>console.log(err));
 }
 
 // /cart => GET
@@ -64,7 +64,7 @@ exports.getCartPage = (req, res, next) => {
                 console.log("User has a cart");
                 cart.getProducts()
                     .then(cartProducts=>{
-                        console.log(cartProducts);
+                        // console.log(cartProducts);
                         // Render the products in the view
                         res.render("shop/cart",{
                             pageTitle: 'Your Cart', 
@@ -132,15 +132,25 @@ exports.postCart = (req, res, next) => {
 // /cart-delete-product => POST
 exports.deleteCartProduct = (req, res, next) => {
     const productId = req.body.productId;
-    console.log(productId);
-    //Retrieve the price of the product to delete
-    Product.findProductById(productId,(product) => {
-        //Delete product item from the cart
-        const productPrice = product.price;
-        Cart.deleteProductById(productId, productPrice);
-        res.redirect("/cart");
-    });
-    
+
+    req.user.getCart()
+        .then(cart=>{
+            return cart.getProducts({where: {id: productId}});
+        })
+        .catch(err=>console.log(err))
+            .then(products=>{
+                if (products.length > 0) {
+                    const product = products[0];
+                    console.log("product to DESTROY:  ",product);
+                    return product.cartItem.destroy(); //
+                }
+                else {
+                    console.log("Product is not found in the cart.");
+                }
+            })
+                .then(result=>res.redirect("/cart"))
+                .catch(err=>console.log(err))
+            .catch(err=>console.log(err))
 }
 
 // /cart => GET
